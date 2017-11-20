@@ -19,7 +19,7 @@ namespace SunMoon_Azimuth_RightAscension
             p = new SerialPort("COM3", 9600);
             p.DataReceived += P_DataReceived;
             InitializeComponent();
-            //p.Open();
+            p.Open();
         }
 
         private void P_DataReceived(object sender, SerialDataReceivedEventArgs e)
@@ -96,8 +96,8 @@ namespace SunMoon_Azimuth_RightAscension
             {
                 azimuthval = float.Parse(txtboxAzimuthS.Text.Substring(1));
             }
-            //Serializer s = new Serializer(float.Parse(txtboxRAS.Text), azimuthval);
-            //p.WriteLine(s.SendJson());
+            Serializer s = new Serializer(float.Parse(txtboxRAS.Text), azimuthval);
+            p.WriteLine(s.SendJson());
         }
 
         int count = 0;

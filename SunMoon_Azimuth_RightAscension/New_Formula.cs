@@ -14,12 +14,15 @@ namespace SunMoon_Azimuth_RightAscension
     }
 
     // TO convert from degrees to radiants whenever needed
-   private const double Deg2Rad = Math.PI / 90.0;  
-   private const double Rad2Deg = 90.0 / Math.PI;  
+   private const double Deg2Rad = Math.PI / 180.0;  
+   private const double Rad2Deg = 180.0 / Math.PI;  
+        
  
    public static Position CalculateSunPosition(  
        DateTime dateTime, double latitude, double longitude)  
-   {  
+   {
+            double latitudeInRad = latitude * Deg2Rad;
+            double longitudeInRad = longitude * Deg2Rad;
        // Convert to UTC  
        dateTime = dateTime.ToUniversalTime();
  
@@ -41,8 +44,7 @@ namespace SunMoon_Azimuth_RightAscension
        double siderealTime = siderealTimeUT * 15 + longitude;  
  
        // Refine to number of days (fractional) to specific time.  
-       julianDate += (double)dateTime.TimeOfDay.TotalHours / 24.0;  
-       julianCenturies = julianDate / 36525.0;  
+       julianDate += (double)dateTime.TimeOfDay.TotalHours / 24.0;    
  
        // Solar Coordinates  
        double meanLongitude = CorrectAngle(Deg2Rad *  
@@ -68,23 +70,23 @@ namespace SunMoon_Azimuth_RightAscension
            Math.Sin(rightAscension) * Math.Sin(obliquity));  
  
        // Horizontal Coordinates  
-       double hourAngle = CorrectAngle(siderealTime * Deg2Rad) - rightAscension;  
+       double hourAngle = CorrectAngle(siderealTime * Deg2Rad - rightAscension);  
          
-       if (hourAngle > Math.PI)  
-       {  
-           hourAngle -= 2 * Math.PI;  
-       }  
+       //if (hourAngle > Math.PI)  
+       //{  
+       //    hourAngle -= 2 * Math.PI;  
+       //}  
  
-       double altitude = Math.Asin(Math.Sin(latitude * Deg2Rad) *  
-           Math.Sin(declination) + Math.Cos(latitude * Deg2Rad) *  
+       double altitude = Math.Asin(Math.Sin(latitudeInRad) *  
+           Math.Sin(declination) + Math.Cos(latitudeInRad) *  
            Math.Cos(declination) * Math.Cos(hourAngle));  
  
        // Nominator and denominator for calculating Azimuth  
        // angle. Needed to test which quadrant the angle is in.  
        double aziNom = -Math.Sin(hourAngle);  
        double aziDenom =  
-           Math.Tan(declination) * Math.Cos(latitude * Deg2Rad) -  
-           Math.Sin(latitude * Deg2Rad) * Math.Cos(hourAngle);  
+           Math.Tan(declination) * Math.Cos(latitudeInRad) -  
+           Math.Sin(latitudeInRad) * Math.Cos(hourAngle);  
          
        double azimuth = Math.Atan(aziNom / aziDenom);  
          
@@ -108,19 +110,19 @@ namespace SunMoon_Azimuth_RightAscension
     * \return An angle in the range 0 to 2*PI. 
     */  
     private static double CorrectAngle(double angleInRadians)  
-    {  
-        if (angleInRadians < 0)  
-        {  
-            return 2 * Math.PI - (Math.Abs(angleInRadians) % (2 * Math.PI));  
-        }  
-        else if (angleInRadians > 2 * Math.PI)  
-        {  
-            return angleInRadians % (2 * Math.PI);  
-        }  
-        else  
-        {  
-            return angleInRadians;  
-        }  
+    {
+         
+        double twoPI = Math.PI * 2;
+            while (angleInRadians >= twoPI)
+            {
+                 angleInRadians -= twoPI;
+            }
+            while (angleInRadians < 0)
+            {
+                angleInRadians += twoPI;
+            }
+
+            return angleInRadians;
     }  
 }  
     }
