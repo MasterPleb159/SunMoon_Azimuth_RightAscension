@@ -38,8 +38,15 @@ namespace SunMoon_Azimuth_RightAscension
             this.y = y;
         }
 
+        public Senddata()
+        {
+        }
+
         public void SendVec()
         {
+            DataLayer dl = new DataLayer();
+            dl.CreateTable();
+            dl.InsertData();
             myport.Open();
             myport.WriteLine(new Serializer(x, y).SendJson());
             myport.Close();

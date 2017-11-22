@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="Azimuth.cs" />
     <Compile Include="Calculate_Vectors.cs" />
+    <Compile Include="DataLayer.cs" />
     <Compile Include="FormSun.cs">
       <SubType>Form</SubType>
     </Compile>
